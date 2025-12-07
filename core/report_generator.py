@@ -341,7 +341,7 @@ class EEGReportGenerator:
                         'θ (theta)': (4, 8, '#2ca02c'),
                         'α (alpha)': (8, 13, '#d62728'),
                         'β (beta)': (13, 30, '#ff7f0e'),
-                        'γ (gamma)': (30, 50, '#9467bd')
+                        'γ (gamma)': (30, 100, '#9467bd')
                     }
 
                     for rhythm, (low, high, color) in rhythm_bands.items():

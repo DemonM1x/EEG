@@ -18,7 +18,7 @@ class EEGAnalyzer:
             'theta': (4, 8),
             'alpha': (8, 13),
             'beta': (13, 30),
-            'gamma': (30, 50)  # Ограничиваем гамма-ритм до 50 Гц для совместимости
+            'gamma': (30, 100)
         }
 
     def get_rhythm_recommendations(self, analysis_result):

@@ -167,7 +167,7 @@ class EEGDataLoader:
             (4, 8, 40),  # Theta
             (8, 13, 60),  # Alpha
             (13, 30, 30),  # Beta
-            (30, 40, 20),  # Gamma
+            (30, 100, 20),  # Gamma
             (2, 30, 35),  # Mixed
             (8, 12, 55),  # Alpha
             (15, 25, 25)  # Beta

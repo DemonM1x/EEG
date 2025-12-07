@@ -104,7 +104,7 @@ class SingleRhythmAnalysisThread(QThread):
     def run(self):
         try:
             self.info_signal.emit(f"Анализ ритма {self.rhythm_name}...")
-            rhythm_bands = {'дельта': (0.5, 4), 'тета': (4, 8), 'альфа': (8, 13), 'бета': (13, 30), 'гамма': (30, 50)}
+            rhythm_bands = {'дельта': (0.5, 4), 'тета': (4, 8), 'альфа': (8, 13), 'бета': (13, 30), 'гамма': (30, 100)}
             if self.rhythm_name not in rhythm_bands:
                 raise ValueError(f"Неизвестный ритм: {self.rhythm_name}")
             low_freq, high_freq = rhythm_bands[self.rhythm_name]
