@@ -225,16 +225,16 @@ class VisualizationMethods:
         try:
             info_text = "=== ИНФОРМАЦИЯ О ДАННЫХ ===\n\n"
             if self.raw_data is not None:
-                info_text += f"📊 ИСХОДНЫЕ ДАННЫЕ:\n• Каналов: {len(self.raw_data)}\n• Образцов: {self.raw_data.shape[1]}\n• Частота дискретизации: {self.sampling_rate} Гц\n• Длительность: {self.raw_data.shape[1] / self.sampling_rate:.2f} сек\n• Каналы: {', '.join(self.channel_names) if self.channel_names else 'Не указаны'}\n\n"
+                info_text += f"ИСХОДНЫЕ ДАННЫЕ:\n• Каналов: {len(self.raw_data)}\n• Образцов: {self.raw_data.shape[1]}\n• Частота дискретизации: {self.sampling_rate} Гц\n• Длительность: {self.raw_data.shape[1] / self.sampling_rate:.2f} сек\n• Каналы: {', '.join(self.channel_names) if self.channel_names else 'Не указаны'}\n\n"
                 for i, channel_name in enumerate(self.channel_names[:min(len(self.channel_names), len(self.raw_data))]):
                     channel_data = self.raw_data[i]
                     info_text += f"  {channel_name}:\n    - Среднее: {np.mean(channel_data):.3f} мкВ\n    - СКО: {np.std(channel_data):.3f} мкВ\n    - Мин/Макс: {np.min(channel_data):.3f} / {np.max(channel_data):.3f} мкВ\n"
             if self.processed_data is not None:
-                info_text += f"\n🔧 ОБРАБОТАННЫЕ ДАННЫЕ:\n• Применены фильтры: {self.processing_params['low_freq']}-{self.processing_params['high_freq']} Гц\n• Notch фильтр: {self.processing_params['notch_freq']} Гц\n• Детренд: {'Да' if self.processing_params['detrend'] else 'Нет'}\n• Удаление DC: {'Да' if self.processing_params['remove_dc'] else 'Нет'}\n• Удаление артефактов: {'Да' if self.processing_params['remove_artifacts'] else 'Нет'}\n"
+                info_text += f"\nОБРАБОТАННЫЕ ДАННЫЕ:\n• Применены фильтры: {self.processing_params['low_freq']}-{self.processing_params['high_freq']} Гц\n• Notch фильтр: {self.processing_params['notch_freq']} Гц\n• Детренд: {'Да' if self.processing_params['detrend'] else 'Нет'}\n• Удаление DC: {'Да' if self.processing_params['remove_dc'] else 'Нет'}\n• Удаление артефактов: {'Да' if self.processing_params['remove_artifacts'] else 'Нет'}\n"
                 if self.processing_params['remove_artifacts']:
                     info_text += f"• Порог артефактов: {self.processing_params['artifact_threshold']} СКО\n"
             if self.current_analysis is not None:
-                info_text += f"\n🧠 АНАЛИЗ РИТМОВ:\n"
+                info_text += f"\nАНАЛИЗ РИТМОВ:\n"
                 analysis = self.current_analysis['analysis']
                 channel_idx = self.current_analysis['channel_idx']
                 info_text += f"• Анализируемый канал: {self.channel_names[channel_idx]}\n"
@@ -253,18 +253,193 @@ class VisualizationMethods:
         if self.current_analysis is None:
             return
         try:
-            recommendations = self.current_analysis.get('recommendations', [])
-            rec_text = "=== РЕКОМЕНДАЦИИ ПО АНАЛИЗУ ЭЭГ ===\n\n"
-            if recommendations:
-                for i, rec in enumerate(recommendations, 1):
-                    rec_text += f"{i}. {rec}\n\n"
-            else:
-                rec_text += "Рекомендации не доступны.\n\n"
-            rec_text += "📋 ОБЩИЕ РЕКОМЕНДАЦИИ:\n\n• Проверьте качество сигнала перед анализом\n• Убедитесь в правильности настроек фильтров\n• Сравните результаты с нормативными значениями\n• При необходимости проведите валидацию с MNE-Python\n• Сохраните отчет для дальнейшего анализа\n\n"
-            rec_text += "🧠 ИНТЕРПРЕТАЦИЯ РИТМОВ:\n\n• Дельта (0.5-4 Гц): Глубокий сон, патологические состояния\n• Тета (4-8 Гц): Сонливость, медитация, творческие процессы\n• Альфа (8-13 Гц): Расслабленное бодрствование, закрытые глаза\n• Бета (13-30 Гц): Активное мышление, концентрация\n• Гамма (30-100 Гц): Высокая когнитивная активность\n"
+            analysis = self.current_analysis['analysis']
+            recommendations = self.current_analysis.get('recommendations', {})
+            
+            rec_text = "=== ПЕРСОНАЛЬНЫЕ РЕКОМЕНДАЦИИ ===\n\n"
+            
+            # Если есть рекомендации от анализатора, используем их
+            if recommendations and isinstance(recommendations, dict):
+                # Общее состояние
+                if 'general' in recommendations:
+                    general = recommendations['general']
+                    rec_text += f"ОБЩЕЕ СОСТОЯНИЕ:\n"
+                    rec_text += f"• {general.get('summary', 'Анализ не завершен')}\n"
+                    rec_text += f"• Доминирующий ритм: {general.get('dominant_rhythm', 'не определен').upper()}\n"
+                    rec_text += f"• Уровень расслабления: {general.get('relaxation_level', 'не определен')}\n\n"
+                
+                # Рекомендации по ритмам
+                if 'rhythm_details' in recommendations:
+                    rec_text += "РЕКОМЕНДАЦИИ ПО РИТМАМ:\n\n"
+                    rhythm_names = {
+                        'delta': 'ДЕЛЬТА (0.5-4 Гц)',
+                        'theta': 'ТЕТА (4-8 Гц)', 
+                        'alpha': 'АЛЬФА (8-13 Гц)',
+                        'beta': 'БЕТА (13-30 Гц)',
+                        'gamma': 'ГАММА (30-100 Гц)'
+                    }
+                    
+                    for rhythm, details in recommendations['rhythm_details'].items():
+                        rhythm_display = rhythm_names.get(rhythm, rhythm.upper())
+                        state = details.get('state', 'НЕИЗВЕСТНО')
+                        recommendation = details.get('recommendation', 'Рекомендации отсутствуют')
+                        power = details.get('relative_power', 0)
+
+                        rec_text += f"{rhythm_display}:\n"
+                        rec_text += f"   Состояние: {state} ({power:.1%})\n"
+                        rec_text += f"   {recommendation}\n\n"
+
+                if 'specific_recommendations' in recommendations:
+                    specific = recommendations['specific_recommendations']
+                    if specific:
+                        rec_text += "СПЕЦИАЛЬНЫЕ РЕКОМЕНДАЦИИ:\n\n"
+                        for i, rec in enumerate(specific, 1):
+                            rec_text += f"{i}. {rec}\n"
+                        rec_text += "\n"
+
+            rec_text += self._generate_lifestyle_recommendations(analysis)
+
+            rec_text += self._generate_medical_alerts(analysis)
+            
             self.info_panel.recommendations_text.setPlainText(rec_text)
+            
         except Exception as e:
             print(f"Ошибка обновления рекомендаций: {e}")
+            # Fallback к базовым рекомендациям
+            self._show_basic_recommendations()
+    
+    def _generate_lifestyle_recommendations(self, analysis):
+        rec_text = "РЕКОМЕНДАЦИИ ПО ОБРАЗУ ЖИЗНИ:\n\n"
+        
+        try:
+            if 'rhythm_analysis' in analysis:
+                rhythm_analysis = analysis['rhythm_analysis']
+
+                alpha_power = rhythm_analysis.get('alpha', {}).get('relative_power', 0)
+                beta_power = rhythm_analysis.get('beta', {}).get('relative_power', 0)
+                theta_power = rhythm_analysis.get('theta', {}).get('relative_power', 0)
+                delta_power = rhythm_analysis.get('delta', {}).get('relative_power', 0)
+                gamma_power = rhythm_analysis.get('gamma', {}).get('relative_power', 0)
+
+                if beta_power > 0.3:  # Высокая бета-активность
+                    rec_text += "УПРАВЛЕНИЕ СТРЕССОМ:\n"
+                    rec_text += "   • Необходимо снизить уровень стресса\n"
+                    rec_text += "   • Рекомендуется медитация или дыхательные упражнения\n"
+                    rec_text += "   • Избегайте кофеина и стимуляторов\n"
+                    rec_text += "   • Практикуйте прогрессивную мышечную релаксацию\n\n"
+                
+                elif alpha_power > 0.25:  # Высокая альфа-активность
+                    rec_text += "РАССЛАБЛЕНИЕ:\n"
+                    rec_text += "   • Отличное состояние для медитации\n"
+                    rec_text += "   • Подходящее время для творческой деятельности\n"
+                    rec_text += "   • Можно продолжить текущую активность\n\n"
+                
+                # Рекомендации по сну
+                if delta_power > 0.25:  # Высокая дельта-активность
+                    rec_text += "СОН И ОТДЫХ:\n"
+                    rec_text += "   • Организм нуждается в отдыхе\n"
+                    rec_text += "   • Рекомендуется короткий сон (20-30 минут)\n"
+                    rec_text += "   • Обеспечьте комфортные условия для сна\n"
+                    rec_text += "   • Избегайте физических нагрузок\n\n"
+                
+                elif delta_power < 0.05:  # Низкая дельта-активность
+                    rec_text += "КАЧЕСТВО СНА:\n"
+                    rec_text += "   • Возможны проблемы с качеством сна\n"
+                    rec_text += "   • Соблюдайте режим сна (7-9 часов)\n"
+                    rec_text += "   • Создайте комфортную среду для сна\n"
+                    rec_text += "   • Избегайте экранов за 1-2 часа до сна\n\n"
+                
+                # Рекомендации по когнитивной активности
+                if gamma_power > 0.15:  # Высокая гамма-активность
+                    rec_text += "КОГНИТИВНАЯ НАГРУЗКА:\n"
+                    rec_text += "   • Высокая умственная активность\n"
+                    rec_text += "   • Делайте регулярные перерывы (каждые 45-60 минут)\n"
+                    rec_text += "   • Пейте достаточно воды\n"
+                    rec_text += "   • Избегайте переутомления\n\n"
+                
+                elif gamma_power < 0.05:  # Низкая гамма-активность
+                    rec_text += "СТИМУЛЯЦИЯ МОЗГА:\n"
+                    rec_text += "   • Рекомендуется умственная активность\n"
+                    rec_text += "   • Решайте головоломки или читайте\n"
+                    rec_text += "   • Изучайте что-то новое\n"
+                    rec_text += "   • Занимайтесь физическими упражнениями\n\n"
+                
+                # Рекомендации по творчеству
+                if theta_power > 0.15:  # Высокая тета-активность
+                    rec_text += "ТВОРЧЕСКАЯ ДЕЯТЕЛЬНОСТЬ:\n"
+                    rec_text += "   • Отличное время для творчества\n"
+                    rec_text += "   • Занимайтесь искусством или музыкой\n"
+                    rec_text += "   • Практикуйте свободное письмо\n"
+                    rec_text += "   • Используйте техники мозгового штурма\n\n"
+                
+        except Exception as e:
+            rec_text += f"Ошибка генерации рекомендаций: {e}\n\n"
+        
+        return rec_text
+    
+    def _generate_medical_alerts(self, analysis):
+        """Генерация медицинских предупреждений"""
+        alert_text = "МЕДИЦИНСКИЕ НАБЛЮДЕНИЯ:\n\n"
+        
+        try:
+            if 'rhythm_analysis' in analysis:
+                rhythm_analysis = analysis['rhythm_analysis']
+                alerts = []
+                
+                # Проверка на аномальные паттерны
+                delta_power = rhythm_analysis.get('delta', {}).get('relative_power', 0)
+                theta_power = rhythm_analysis.get('theta', {}).get('relative_power', 0)
+                alpha_power = rhythm_analysis.get('alpha', {}).get('relative_power', 0)
+                beta_power = rhythm_analysis.get('beta', {}).get('relative_power', 0)
+                
+                # Предупреждения о возможных состояниях
+                if delta_power > 0.4:
+                    alerts.append("Очень высокая дельта-активность - возможно состояние глубокого сна или патология")
+                
+                if beta_power > 0.4:
+                    alerts.append("Очень высокая бета-активность - возможна тревожность или стресс")
+                
+                if alpha_power < 0.05 and beta_power > 0.3:
+                    alerts.append("Низкая альфа при высокой бета - признаки стресса или переутомления")
+                
+                if theta_power > 0.3 and delta_power < 0.1:
+                    alerts.append("Высокая тета при низкой дельта - возможна сонливость в бодрствующем состоянии")
+                
+                # Проверка на спайки (если есть данные)
+                if 'spike_count' in analysis and analysis['spike_count'] > 10:
+                    alerts.append("Обнаружено повышенное количество спайков - рекомендуется консультация специалиста")
+                
+                if alerts:
+                    for alert in alerts:
+                        alert_text += f"{alert}\n\n"
+                    alert_text += "ВАЖНО: Данные рекомендации носят информационный характер.\n"
+                    alert_text += "При наличии симптомов обратитесь к врачу-неврологу.\n\n"
+                else:
+                    alert_text += "Значительных отклонений не обнаружено.\n"
+                    alert_text += "Показатели находятся в пределах нормальных значений.\n\n"
+                    
+        except Exception as e:
+            alert_text += f"Ошибка анализа медицинских данных: {e}\n\n"
+        
+        return alert_text
+    
+    def _show_basic_recommendations(self):
+        """Показать базовые рекомендации в случае ошибки"""
+        rec_text = "=== БАЗОВЫЕ РЕКОМЕНДАЦИИ ===\n\n"
+        rec_text += "ОБЩИЕ РЕКОМЕНДАЦИИ:\n\n"
+        rec_text += "• Проверьте качество сигнала перед анализом\n"
+        rec_text += "• Убедитесь в правильности настроек фильтров\n"
+        rec_text += "• Сравните результаты с нормативными значениями\n"
+        rec_text += "• При необходимости проведите валидацию с MNE-Python\n"
+        rec_text += "• Сохраните отчет для дальнейшего анализа\n\n"
+        rec_text += "ИНТЕРПРЕТАЦИЯ РИТМОВ:\n\n"
+        rec_text += "• Дельта (0.5-4 Гц): Глубокий сон, патологические состояния\n"
+        rec_text += "• Тета (4-8 Гц): Сонливость, медитация, творческие процессы\n"
+        rec_text += "• Альфа (8-13 Гц): Расслабленное бодрствование, закрытые глаза\n"
+        rec_text += "• Бета (13-30 Гц): Активное мышление, концентрация\n"
+        rec_text += "• Гамма (30-100 Гц): Высокая когнитивная активность\n"
+        
+        self.info_panel.recommendations_text.setPlainText(rec_text)
 
     def update_performance_display(self):
         try:
