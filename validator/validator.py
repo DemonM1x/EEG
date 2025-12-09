@@ -1,3 +1,4 @@
+import mne
 import numpy as np
 from scipy.stats import pearsonr
 
@@ -5,26 +6,10 @@ from scipy.stats import pearsonr
 class EEGValidator:
 
     def __init__(self):
-        self.mne_available = self._check_mne()
         self.comparison_results = {}
 
-    def _check_mne(self):
-        try:
-            import mne
-            return True
-        except ImportError:
-            return False
-
     def compare_with_mne(self, data, sampling_rate, channel_names=None):
-        if not self.mne_available:
-            return {
-                'available': False,
-                'message': 'MNE-Python не установлен. Установите: pip install mne'
-            }
-
         try:
-            import mne
-
             # Создаём MNE Raw объект
             if channel_names is None:
                 channel_names = [f'Ch{i + 1}' for i in range(data.shape[0])]
@@ -173,63 +158,11 @@ class EEGValidator:
 
         report.append("ПО КАНАЛАМ:")
         for ch_result in filter_comparison['channels']:
-            report.append(f"  Канал {ch_result['channel']}:")
-            report.append(f"    Корреляция: {ch_result['correlation']:.4f}")
-            report.append(f"    R² (коэфф. детерминации): {ch_result['r_squared']:.4f}")
-            report.append(f"    RMSE: {ch_result['rmse']:.6f}")
-            report.append(f"    NRMSE: {ch_result['nrmse']:.2f}%")
-
-        report.append("")
-        report.append("ИНТЕРПРЕТАЦИЯ:")
-        report.append("-" * 70)
-
-        mean_corr = filter_comparison['summary']['mean_correlation']
-        mean_r2 = filter_comparison['summary']['mean_r_squared']
-        mean_nrmse = filter_comparison['summary']['mean_nrmse']
-
-        # Оценка по корреляции
-        if mean_corr > 0.95:
-            report.append("✅ ОТЛИЧНО: Результаты очень близки к MNE-Python")
-            report.append(f"   Корреляция {mean_corr:.4f} > 0.95 - практически идентичные результаты")
-        elif mean_corr > 0.85:
-            report.append("✓ ХОРОШО: Результаты близки к MNE-Python")
-            report.append(f"   Корреляция {mean_corr:.4f} > 0.85 - незначительные расхождения")
-        elif mean_corr > 0.70:
-            report.append("⚠ УДОВЛЕТВОРИТЕЛЬНО: Есть расхождения с MNE-Python")
-            report.append(f"   Корреляция {mean_corr:.4f} > 0.70 - заметные различия")
-        else:
-            report.append("❌ ТРЕБУЕТ ВНИМАНИЯ: Значительные расхождения с MNE-Python")
-            report.append(f"   Корреляция {mean_corr:.4f} < 0.70 - существенные различия")
-
-        # Оценка по R²
-        report.append("")
-        if mean_r2 > 0.90:
-            report.append(f"   R² = {mean_r2:.4f}: Модель объясняет >90% вариации - отлично")
-        elif mean_r2 > 0.70:
-            report.append(f"   R² = {mean_r2:.4f}: Модель объясняет >70% вариации - хорошо")
-        else:
-            report.append(f"   R² = {mean_r2:.4f}: Модель объясняет <70% вариации - требует проверки")
-
-        # Оценка по NRMSE
-        report.append("")
-        if mean_nrmse < 5:
-            report.append(f"   NRMSE = {mean_nrmse:.2f}%: Ошибка <5% - отличное совпадение")
-        elif mean_nrmse < 10:
-            report.append(f"   NRMSE = {mean_nrmse:.2f}%: Ошибка <10% - хорошее совпадение")
-        elif mean_nrmse < 20:
-            report.append(f"   NRMSE = {mean_nrmse:.2f}%: Ошибка <20% - приемлемое совпадение")
-        else:
-            report.append(f"   NRMSE = {mean_nrmse:.2f}%: Ошибка >20% - требуется проверка алгоритмов")
-
-        report.append("")
-        report.append("ВОЗМОЖНЫЕ ПРИЧИНЫ РАСХОЖДЕНИЙ:")
-        report.append("• Разные методы фильтрации (IIR Баттерворт vs FIR в MNE)")
-        report.append("• Разная обработка краёв сигнала")
-        report.append("• Различия в параметрах фильтров")
-        report.append("• Версии библиотек scipy/numpy")
-
-        report.append("")
-        report.append("=" * 70)
+            report.append(f"Канал {ch_result['channel']}:")
+            report.append(f"Корреляция: {ch_result['correlation']:.4f}")
+            report.append(f"R² (коэфф. детерминации): {ch_result['r_squared']:.4f}")
+            report.append(f"RMSE: {ch_result['rmse']:.6f}")
+            report.append(f"NRMSE: {ch_result['nrmse']:.2f}%")
 
         return "\n".join(report)
 

@@ -4,7 +4,7 @@ from typing import Optional
 
 from PyQt5.QtCore import QObject, pyqtSignal, QTimer
 
-from .realtime_driver import EEGAcquisitionDriver, EEGSample, EEGSampleBatch
+from realtime_work.realtime_driver import EEGAcquisitionDriver, EEGSample, EEGSampleBatch
 
 
 class RealtimeEEGController(QObject):

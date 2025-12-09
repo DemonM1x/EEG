@@ -101,6 +101,7 @@ class EEGAnalyzer:
         }
         return recommendations.get(rhythm, "Высокая мощность ритма")
 
+
     def get_normal_recommendation(self, rhythm):
         recommendations = {
             'delta': "Нормальный сон и восстановление",
@@ -191,6 +192,7 @@ class EEGAnalyzer:
             frequencies = frequencies[positive_freq_idx]
             power_spectrum = np.abs(fft_result[positive_freq_idx]) ** 2 / n
 
+
             # Расчет мощности в ритмах
             rhythm_power = {}
             for rhythm, (low, high) in self.rhythm_bands.items():
@@ -277,6 +279,7 @@ class EEGAnalyzer:
                     )
                 }
 
+
             return {
                 'rhythm_analysis': rhythm_analysis,
                 'dominant_rhythm': max(spectral_result['relative_power'].items(),
@@ -299,9 +302,8 @@ class EEGAnalyzer:
             low_freq, high_freq, sampling_rate
         )
 
-        # Если были предупреждения, выводим их (но не прерываем выполнение)
         if warnings:
-            print(f"⚠️  Коррекция параметров фильтра для ритма {low_freq}-{high_freq} Гц:")
+            print(f"Коррекция параметров фильтра для ритма {low_freq}-{high_freq} Гц:")
             for warning in warnings:
                 print(f"   • {warning}")
 
@@ -377,40 +379,6 @@ class EEGAnalyzer:
                 'dynamic_range': np.max(flat_data) - np.min(flat_data)
             }
 
-    def compare_with_mne(self, data, sampling_rate):
-        try:
-            import mne
-            from mne.time_frequency import psd_array_welch
-
-            # Расчет PSD с помощью MNE
-            psd_mne, freqs_mne = psd_array_welch(
-                data, sfreq=sampling_rate, fmin=0.5, fmax=40.0
-            )
-
-            # Расчет PSD нашим методом
-            our_result = self.calculate_spectral_power(data, sampling_rate)
-
-            # Сравнение
-            mne_power = np.mean(psd_mne, axis=0)
-            our_power = our_result['power_spectrum']
-
-            # Интерполяция для сравнения на одинаковых частотах
-            from scipy.interpolate import interp1d
-            f_interp = interp1d(freqs_mne, mne_power, bounds_error=False,
-                                fill_value='extrapolate')
-            mne_interp = f_interp(our_result['frequencies'])
-
-            # Корреляция
-            correlation = np.corrcoef(mne_interp, our_power)[0, 1]
-
-            return {
-                'correlation': correlation,
-                'mse': np.mean((mne_interp - our_power) ** 2),
-                'max_diff': np.max(np.abs(mne_interp - our_power))
-            }
-
-        except ImportError:
-            return {'error': 'MNE-Python не установлен'}
 
     def get_eeg_performance_report(self):
         return self.performance_monitor.get_detailed_summary()

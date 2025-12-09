@@ -5,9 +5,9 @@ import unittest
 # Добавляем путь к корневой директории проекта
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.analyzer import EEGAnalyzer
-from core.preprocessor import EEGPreprocessor
-from core.data_loader import EEGDataLoader
+from analyzer.analyzer import EEGAnalyzer
+from preprocessor.preprocessor import EEGPreprocessor
+from data_loader.data_loader import EEGDataLoader
 
 
 class TestEEGAnalyzer(unittest.TestCase):

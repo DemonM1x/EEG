@@ -22,7 +22,7 @@ def test_imports():
         from core.realtime_controller import RealtimeDataBuffer
         print("✓ realtime_controller импортирован")
 
-        from core.realtime_recorder import RealtimeEEGRecorder
+        from realtime_work.realtime_recorder import RealtimeEEGRecorder
         print("✓ realtime_recorder импортирован")
 
         return True
@@ -129,7 +129,7 @@ def test_recorder():
     print("\n=== ТЕСТ РЕКОРДЕРА ===")
 
     try:
-        from core.realtime_recorder import RealtimeEEGRecorder
+        from realtime_work.realtime_recorder import RealtimeEEGRecorder
         from core.realtime_driver import EEGSample, EEGSampleBatch
         import tempfile
         import os

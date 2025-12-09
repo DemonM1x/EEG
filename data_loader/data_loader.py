@@ -1,5 +1,7 @@
 import os
+from datetime import time
 
+import mne
 import numpy as np
 import pandas as pd
 import pyedflib
@@ -79,9 +81,6 @@ class EEGDataLoader:
 
     def load_eeglab(self, file_path):
         try:
-            # Для .set файлов требуется mne
-            import mne
-
             raw = mne.io.read_raw_eeglab(file_path, preload=True)
             data = raw.get_data()
             sampling_rate = raw.info['sfreq']
@@ -92,8 +91,6 @@ class EEGDataLoader:
 
             return data, sampling_rate, channel_names
 
-        except ImportError:
-            raise Exception("Для загрузки .set файлов требуется MNE-Python")
         except Exception as e:
             raise Exception(f"Ошибка загрузки EEGLAB: {e}")
 

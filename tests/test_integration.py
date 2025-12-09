@@ -85,8 +85,8 @@ class TestIntegration(unittest.TestCase):
         try:
             from core.realtime_driver import SerialEEGDriver, SyntheticEEGDriver, EEGSample, EEGSampleBatch
             from core.realtime_controller import RealtimeEEGController, RealtimeDataBuffer
-            from core.realtime_recorder import RealtimeEEGRecorder
-            from core.realtime_visualizer import RealtimeEEGPlot, RealtimeEEGWidget
+            from realtime_work.realtime_recorder import RealtimeEEGRecorder
+            from realtime_work.realtime_visualizer import RealtimeEEGPlot, RealtimeEEGWidget
 
             self.assertTrue(True, "Все real-time модули импортированы успешно")
         except ImportError as e:
@@ -95,9 +95,9 @@ class TestIntegration(unittest.TestCase):
     def test_existing_modules_still_work(self):
         """Тест что существующие модули все еще работают"""
         try:
-            from core.data_loader import EEGDataLoader
-            from core.preprocessor import EEGPreprocessor
-            from core.analyzer import EEGAnalyzer
+            from data_loader.data_loader import EEGDataLoader
+            from preprocessor.preprocessor import EEGPreprocessor
+            from analyzer.analyzer import EEGAnalyzer
             from core.visualizer import EEGVisualizer
             from utils.performance import PerformanceMonitor
 
@@ -121,7 +121,7 @@ class TestIntegration(unittest.TestCase):
         """Тест полного workflow real-time функциональности"""
         from core.realtime_driver import SyntheticEEGDriver, EEGSampleBatch
         from core.realtime_controller import RealtimeDataBuffer
-        from core.realtime_recorder import RealtimeEEGRecorder
+        from realtime_work.realtime_recorder import RealtimeEEGRecorder
 
         # 1. Создаем драйвер
         driver = SyntheticEEGDriver(sample_rate_hz=100.0)

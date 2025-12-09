@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
                              QDoubleSpinBox, QCheckBox, QGroupBox, QTextEdit,
                              QTabWidget, QProgressBar)
 
-from core.performance_widget import PerformanceWidget
+from performance.performance_widget import PerformanceWidget
 
 
 class TopControlPanel(QWidget):

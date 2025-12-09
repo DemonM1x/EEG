@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Импорт наших модулей
 from core.realtime_driver import SyntheticEEGDriver
 from core.realtime_controller import RealtimeEEGController, RealtimeDataBuffer
-from core.realtime_visualizer import RealtimeEEGWidget
+from realtime_work.realtime_visualizer import RealtimeEEGWidget
 
 
 class TestRealtimeApp(QMainWindow):
@@ -130,8 +130,8 @@ def main():
         print("Проверка импортов...")
         from core.realtime_driver import SyntheticEEGDriver, SerialEEGDriver
         from core.realtime_controller import RealtimeEEGController, RealtimeDataBuffer
-        from core.realtime_visualizer import RealtimeEEGWidget
-        from core.realtime_recorder import RealtimeEEGRecorder
+        from realtime_work.realtime_visualizer import RealtimeEEGWidget
+        from realtime_work.realtime_recorder import RealtimeEEGRecorder
         print("✓ Все модули импортированы успешно")
 
         # Тест создания объектов

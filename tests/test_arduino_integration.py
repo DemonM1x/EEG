@@ -227,7 +227,7 @@ class TestArduinoIntegration(unittest.TestCase):
     def test_data_recording_integration(self):
         """Тест интеграции записи данных (один канал)"""
         from core.realtime_driver import EEGSample, EEGSampleBatch
-        from core.realtime_recorder import RealtimeEEGRecorder
+        from realtime_work.realtime_recorder import RealtimeEEGRecorder
         import tempfile
         import os
 

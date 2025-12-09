@@ -1,4 +1,3 @@
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import time
 
 from PyQt5.QtCore import pyqtSignal
@@ -6,7 +5,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-from .realtime_controller import RealtimeDataBuffer
+from realtime_work.realtime_controller     import RealtimeDataBuffer
 
 
 class RealtimeEEGPlot(FigureCanvas):

@@ -2,11 +2,11 @@ import serial.tools.list_ports
 
 from app.processing import ProcessingMethods, RealtimeMethods
 from app.visualization import VisualizationMethods
-from core.analyzer import EEGAnalyzer
-from core.data_loader import EEGDataLoader
-from core.preprocessor import EEGPreprocessor
-from core.realtime_visualizer import RealtimeEEGWidget
-from core.validator import EEGValidator
+from analyzer.analyzer import EEGAnalyzer
+from data_loader.data_loader import EEGDataLoader
+from preprocessor.preprocessor import EEGPreprocessor
+from realtime_work.realtime_visualizer import RealtimeEEGWidget
+from validator.validator import EEGValidator
 from core.visualizer import EEGVisualizer
 from gui.menu_bar import EEGMenuBar
 from gui.panels import *

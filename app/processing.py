@@ -3,11 +3,11 @@ import time
 import numpy as np
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 
-from core.realtime_controller import RealtimeEEGController, RealtimeDataBuffer
-from core.realtime_driver import SerialEEGDriver, SyntheticEEGDriver, EEGSample, EEGSampleBatch
-from core.realtime_recorder import RealtimeEEGRecorder
-from core.report_dialog import ReportConfigDialog
-from core.validation_dialog import ValidationDialog
+from realtime_work.realtime_controller import RealtimeEEGController, RealtimeDataBuffer
+from realtime_work.realtime_driver import SerialEEGDriver, SyntheticEEGDriver, EEGSample, EEGSampleBatch
+from realtime_work.realtime_recorder import RealtimeEEGRecorder
+from report_generator.report_dialog import ReportConfigDialog
+from validator.validation_dialog import ValidationDialog
 from gui.threads import ProcessingThread, AnalysisThread, SingleRhythmAnalysisThread
 
 
@@ -212,18 +212,13 @@ class ProcessingMethods:
                     return
 
                 # Создаем генератор отчетов
-                from core.report_generator import EEGReportGenerator
+                from report_generator.report_generator import EEGReportGenerator
                 report_generator = EEGReportGenerator()
 
                 # Генерируем отчет используя правильный интерфейс
                 success = report_generator.generate_report(
-                    raw_data=self.raw_data,
-                    processed_data=self.processed_data,
-                    current_analysis=self.current_analysis,
-                    sampling_rate=self.sampling_rate,
-                    channel_names=self.channel_names,
                     output_path=output_path,
-                    config={'patient_info': patient_info}
+                    patient_info=patient_info,
                 )
 
                 if success:
